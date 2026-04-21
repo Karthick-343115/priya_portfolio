@@ -1,0 +1,3248 @@
+<!doctype html>
+<html lang="en" class="dark scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alex Carter | Cyber Security & Data Analysis</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              orbitron: ["Orbitron", "monospace"],
+              rajdhani: ["Rajdhani", "sans-serif"],
+              inter: ["Inter", "sans-serif"],
+            },
+            colors: {
+              cyber: {
+                50: "#e0faff",
+                100: "#b3f4ff",
+                200: "#66e8ff",
+                300: "#19dcff",
+                400: "#00d4ff",
+                500: "#00bde6",
+                600: "#009dbe",
+                700: "#007d96",
+                800: "#005d6e",
+                900: "#003d47",
+              },
+              neon: {
+                blue: "#00d4ff",
+                purple: "#b040fb",
+                green: "#00ff88",
+              },
+            },
+            animation: {
+              float: "float 6s ease-in-out infinite",
+              "pulse-glow": "pulseGlow 2s ease-in-out infinite",
+              scan: "scan 3s linear infinite",
+              "gradient-x": "gradientX 4s ease infinite",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0px)" },
+                "50%": { transform: "translateY(-20px)" },
+              },
+              pulseGlow: {
+                "0%, 100%": { boxShadow: "0 0 5px #00d4ff, 0 0 10px #00d4ff" },
+                "50%": {
+                  boxShadow:
+                    "0 0 20px #00d4ff, 0 0 40px #00d4ff, 0 0 60px #00d4ff",
+                },
+              },
+              scan: {
+                "0%": { transform: "translateY(-100%)" },
+                "100%": { transform: "translateY(100vh)" },
+              },
+              gradientX: {
+                "0%, 100%": { backgroundPosition: "0% 50%" },
+                "50%": { backgroundPosition: "100% 50%" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      :root {
+        --bg-primary: #04040f;
+        --bg-secondary: #080820;
+        --bg-card: rgba(8, 20, 40, 0.6);
+        --border-glass: rgba(0, 212, 255, 0.15);
+        --text-primary: #e8f4f8;
+        --text-secondary: #94a3b8;
+        --accent-blue: #00d4ff;
+        --accent-purple: #b040fb;
+        --glow-blue: rgba(0, 212, 255, 0.3);
+        --glow-purple: rgba(176, 64, 251, 0.3);
+      }
+
+      .light-mode {
+        --bg-primary: #f0f8ff;
+        --bg-secondary: #e0f0fb;
+        --bg-card: rgba(255, 255, 255, 0.7);
+        --border-glass: rgba(0, 150, 200, 0.25);
+        --text-primary: #0a1628;
+        --text-secondary: #334155;
+        --accent-blue: #0077aa;
+        --accent-purple: #7c22d4;
+        --glow-blue: rgba(0, 119, 170, 0.2);
+        --glow-purple: rgba(124, 34, 212, 0.2);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: "Inter", sans-serif;
+        overflow-x: hidden;
+        transition:
+          background-color 0.4s,
+          color 0.4s;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg-primary);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--accent-blue);
+        border-radius: 3px;
+      }
+
+      /* Canvas */
+      #particle-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* Scroll progress */
+      #scroll-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--accent-blue),
+          var(--accent-purple)
+        );
+        z-index: 9999;
+        transition: width 0.1s ease;
+        box-shadow: 0 0 10px var(--accent-blue);
+      }
+
+      /* Cursor glow */
+      #cursor-glow {
+        position: fixed;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 212, 255, 0.08) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+        transition: opacity 0.3s;
+      }
+
+      /* Glass card */
+      .glass-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--border-glass);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .glass-card:hover {
+        border-color: rgba(0, 212, 255, 0.4);
+        box-shadow:
+          0 8px 32px rgba(0, 212, 255, 0.15),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transform: translateY(-4px);
+      }
+
+      /* Nav glass */
+      .nav-glass {
+        background: rgba(4, 4, 15, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border-glass);
+      }
+
+      .light-mode .nav-glass {
+        background: rgba(240, 248, 255, 0.85);
+      }
+
+      /* Neon text */
+      .neon-text {
+        color: var(--accent-blue);
+        text-shadow:
+          0 0 10px var(--accent-blue),
+          0 0 20px rgba(0, 212, 255, 0.5);
+      }
+
+      .neon-text-purple {
+        color: var(--accent-purple);
+        text-shadow:
+          0 0 10px var(--accent-purple),
+          0 0 20px rgba(176, 64, 251, 0.5);
+      }
+
+      /* Gradient text */
+      .gradient-text {
+        background: linear-gradient(
+          135deg,
+          var(--accent-blue) 0%,
+          var(--accent-purple) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Neon button */
+      .btn-primary {
+        background: transparent;
+        border: 1px solid var(--accent-blue);
+        color: var(--accent-blue);
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+
+      .btn-primary::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--accent-blue);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .btn-primary:hover::before {
+        opacity: 0.1;
+      }
+      .btn-primary:hover {
+        box-shadow:
+          0 0 20px var(--glow-blue),
+          0 0 40px rgba(0, 212, 255, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+        background: linear-gradient(
+          135deg,
+          var(--accent-blue),
+          var(--accent-purple)
+        );
+        border: none;
+        color: #fff;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+
+      .btn-secondary:hover {
+        box-shadow:
+          0 0 25px var(--glow-blue),
+          0 0 50px rgba(176, 64, 251, 0.2);
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+      }
+
+      /* Typing cursor */
+      .typing-cursor {
+        display: inline-block;
+        width: 3px;
+        height: 1em;
+        background: var(--accent-blue);
+        margin-left: 4px;
+        animation: blink 1s step-end infinite;
+        vertical-align: middle;
+        box-shadow: 0 0 8px var(--accent-blue);
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+
+      /* Section heading line */
+      .section-heading::after {
+        content: "";
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--accent-blue),
+          var(--accent-purple)
+        );
+        margin-top: 12px;
+        border-radius: 2px;
+        box-shadow: 0 0 10px var(--accent-blue);
+      }
+
+      /* Skill bar */
+      .skill-bar-fill {
+        height: 4px;
+        border-radius: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--accent-blue),
+          var(--accent-purple)
+        );
+        box-shadow: 0 0 8px var(--accent-blue);
+        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Project card hover */
+      .project-card {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .project-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(0, 212, 255, 0.05),
+          rgba(176, 64, 251, 0.05)
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .project-card:hover::before {
+        opacity: 1;
+      }
+
+      .project-card .card-border-glow {
+        position: absolute;
+        inset: -1px;
+        border-radius: 17px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-blue),
+          var(--accent-purple)
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: -1;
+      }
+
+      .project-card:hover .card-border-glow {
+        opacity: 0.5;
+      }
+
+      /* Tag chips */
+      .tech-tag {
+        background: rgba(0, 212, 255, 0.1);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        color: var(--accent-blue);
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      /* Nav link */
+      .nav-link {
+        position: relative;
+        color: var(--text-secondary);
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 4px 0;
+        transition: color 0.3s;
+      }
+
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--accent-blue),
+          var(--accent-purple)
+        );
+        transition: width 0.3s ease;
+        border-radius: 1px;
+      }
+
+      .nav-link:hover {
+        color: var(--accent-blue);
+      }
+      .nav-link:hover::after {
+        width: 100%;
+      }
+      .nav-link.active {
+        color: var(--accent-blue);
+      }
+      .nav-link.active::after {
+        width: 100%;
+      }
+
+      /* Hero grid decoration */
+      .hero-grid {
+        background-image:
+          linear-gradient(rgba(0, 212, 255, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 212, 255, 0.04) 1px, transparent 1px);
+        background-size: 50px 50px;
+      }
+
+      /* Scan line */
+      .scan-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent-blue),
+          transparent
+        );
+        opacity: 0.4;
+        animation: scan 4s linear infinite;
+      }
+
+      /* Avatar hex frame */
+      .hex-frame {
+        clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .modal-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .modal-content {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-glass);
+        border-radius: 16px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 88vh;
+        overflow-y: auto;
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+        position: relative;
+      }
+
+      .modal-overlay.open .modal-content {
+        transform: scale(1);
+      }
+
+      /* Input fields */
+      .form-input {
+        background: rgba(0, 212, 255, 0.04);
+        border: 1px solid var(--border-glass);
+        border-radius: 8px;
+        color: var(--text-primary);
+        padding: 12px 16px;
+        width: 100%;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        transition: all 0.3s;
+        outline: none;
+      }
+
+      .form-input:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+      }
+
+      .form-input::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.6;
+      }
+
+      /* Theme toggle */
+      .theme-btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border-glass);
+        color: var(--accent-blue);
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        backdrop-filter: blur(10px);
+      }
+
+      .theme-btn:hover {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 12px var(--glow-blue);
+      }
+
+      /* Mobile menu */
+      .mobile-menu {
+        background: rgba(4, 4, 15, 0.97);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border-glass);
+      }
+
+      .light-mode .mobile-menu {
+        background: rgba(240, 248, 255, 0.97);
+      }
+
+      /* Social links */
+      .social-link {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        border: 1px solid var(--border-glass);
+        background: var(--bg-card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.3s;
+        font-size: 16px;
+      }
+
+      .social-link:hover {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+        box-shadow: 0 0 15px var(--glow-blue);
+        transform: translateY(-3px);
+      }
+
+      /* Animated entrance */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Status dot */
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #00ff88;
+        box-shadow: 0 0 8px #00ff88;
+        animation: pulse-green 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse-green {
+        0%,
+        100% {
+          box-shadow: 0 0 4px #00ff88;
+        }
+        50% {
+          box-shadow:
+            0 0 16px #00ff88,
+            0 0 28px rgba(0, 255, 136, 0.4);
+        }
+      }
+
+      /* Corner brackets on cards */
+      .bracket-card {
+        position: relative;
+      }
+
+      .bracket-card::before,
+      .bracket-card::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-color: var(--accent-blue);
+        border-style: solid;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .bracket-card::before {
+        top: -2px;
+        left: -2px;
+        border-width: 2px 0 0 2px;
+        border-radius: 2px 0 0 0;
+      }
+
+      .bracket-card::after {
+        bottom: -2px;
+        right: -2px;
+        border-width: 0 2px 2px 0;
+        border-radius: 0 0 2px 0;
+      }
+
+      .bracket-card:hover::before,
+      .bracket-card:hover::after {
+        opacity: 1;
+      }
+
+      /* Light mode adjustments */
+      .light-mode body,
+      html.light-mode body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+      }
+
+      .light-mode .tech-tag {
+        background: rgba(0, 119, 170, 0.1);
+        border-color: rgba(0, 119, 170, 0.3);
+      }
+
+      .light-mode .form-input {
+        background: rgba(0, 119, 170, 0.05);
+        color: #0a1628;
+      }
+
+      /* Hero code decoration */
+      .code-decoration {
+        font-family: "Orbitron", monospace;
+        font-size: 11px;
+        color: rgba(0, 212, 255, 0.3);
+        line-height: 1.8;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      /* Resume preview */
+      .resume-section-header {
+        background: linear-gradient(
+          90deg,
+          rgba(0, 212, 255, 0.15),
+          transparent
+        );
+        border-left: 3px solid var(--accent-blue);
+        padding: 6px 12px;
+        margin-bottom: 10px;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-size: 13px;
+        color: var(--accent-blue);
+      }
+
+      /* Floating shapes */
+      .shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        pointer-events: none;
+      }
+
+      /* Responsive text */
+      @media (max-width: 768px) {
+        .hero-name {
+          font-size: 2.5rem !important;
+        }
+        .hero-title {
+          font-size: 1rem !important;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero-name {
+          font-size: 2rem !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body id="body">
+    <!-- Particle Canvas -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Cursor Glow -->
+    <div id="cursor-glow"></div>
+
+    <!-- Scroll Progress -->
+    <div id="scroll-progress"></div>
+
+    <!-- ═══════════════════════ NAVIGATION ═══════════════════════ -->
+    <nav
+      id="navbar"
+      class="nav-glass fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+    >
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <a href="#hero" class="flex items-center gap-2 group">
+            <div
+              class="w-8 h-8 border border-cyan-400 rotate-45 flex items-center justify-center transition-all group-hover:border-purple-400"
+              style="border-color: var(--accent-blue)"
+            >
+              <div
+                class="w-3 h-3 rotate-[-45deg] text-xs font-orbitron font-bold"
+                style="color: var(--accent-blue)"
+              >
+                PD
+              </div>
+            </div>
+            <span
+              class="font-orbitron font-bold text-sm tracking-widest gradient-text hidden sm:block"
+              >PRIYA_DARSHINI</span
+            >
+          </a>
+
+          <!-- Desktop Nav -->
+          <div class="hidden md:flex items-center gap-8">
+            <a href="#about" class="nav-link">About</a>
+            <a href="#skills" class="nav-link">Skills</a>
+            <a href="#projects" class="nav-link">Projects</a>
+            <a href="#resume" class="nav-link">Resume</a>
+            <a href="#contact" class="nav-link">Contact</a>
+          </div>
+
+          <!-- Right controls -->
+          <div class="flex items-center gap-3">
+            <button id="theme-toggle" class="theme-btn" title="Toggle Theme">
+              <i class="fas fa-moon text-sm" id="theme-icon"></i>
+            </button>
+            <!-- Mobile hamburger -->
+            <button id="mobile-menu-btn" class="theme-btn md:hidden">
+              <i class="fas fa-bars text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="mobile-menu hidden md:hidden">
+        <div class="px-6 py-4 flex flex-col gap-4">
+          <a href="#about" class="nav-link" onclick="closeMobileMenu()"
+            >About</a
+          >
+          <a href="#skills" class="nav-link" onclick="closeMobileMenu()"
+            >Skills</a
+          >
+          <a href="#projects" class="nav-link" onclick="closeMobileMenu()"
+            >Projects</a
+          >
+          <a href="#resume" class="nav-link" onclick="closeMobileMenu()"
+            >Resume</a
+          >
+          <a href="#contact" class="nav-link" onclick="closeMobileMenu()"
+            >Contact</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- ═══════════════════════ HERO ═══════════════════════ -->
+    <section
+      id="hero"
+      class="hero-grid relative min-h-screen flex items-center justify-center overflow-hidden pt-16"
+    >
+      <!-- Background glows -->
+      <div
+        class="shape w-96 h-96 opacity-10"
+        style="background: var(--accent-blue); top: 10%; left: -100px"
+      ></div>
+      <div
+        class="shape w-80 h-80 opacity-10"
+        style="background: var(--accent-purple); bottom: 10%; right: -80px"
+      ></div>
+
+      <!-- Scan line -->
+      <div class="scan-line"></div>
+
+      <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 w-full">
+        <div class="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+          <!-- Left: Content -->
+          <div class="reveal">
+            <!-- Status -->
+            <div class="flex items-center gap-3 mb-6">
+              <div class="status-dot"></div>
+              <span
+                class="font-rajdhani text-sm tracking-widest uppercase"
+                style="color: var(--text-secondary)"
+                >Available for Opportunities</span
+              >
+            </div>
+
+            <!-- Greeting -->
+            <p
+              class="font-rajdhani text-lg tracking-widest uppercase mb-2"
+              style="color: var(--accent-blue)"
+            >
+              <span class="opacity-60">{'>'}</span> Hello, I'm
+            </p>
+
+            <!-- Name -->
+            <h1
+              class="hero-name font-orbitron font-black mb-4"
+              style="
+                font-size: 3.5rem;
+                line-height: 1.1;
+                color: var(--text-primary);
+              "
+            >
+              PRIYA<br />
+              <span class="gradient-text">DARSHINI</span>
+            </h1>
+
+            <!-- Animated title -->
+            <div class="mb-6 h-8 flex items-center">
+              <span
+                class="font-rajdhani font-semibold text-lg tracking-wider"
+                style="color: var(--text-secondary)"
+                >&gt;&gt;&nbsp;</span
+              >
+              <span
+                id="typed-text"
+                class="font-rajdhani font-semibold text-lg tracking-wider"
+                style="color: var(--accent-blue)"
+              ></span>
+              <span class="typing-cursor"></span>
+            </div>
+
+            <!-- Summary -->
+            <p
+              class="font-inter text-base leading-relaxed mb-8 max-w-lg"
+              style="color: var(--text-secondary); line-height: 1.8"
+            >
+              Cyber Security student with strong knowledge in
+              <span style="color: var(--accent-blue)">Python, Java,</span> and
+              <span style="color: var(--accent-blue)">C</span>. Skilled in data
+              analysis using
+              <span style="color: var(--accent-purple)">Pandas, NumPy,</span>
+              and <span style="color: var(--accent-purple)">SQL</span>.
+              Passionate about building
+              <strong style="color: var(--text-primary)"
+                >secure, data-driven solutions</strong
+              >.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-wrap gap-4">
+              <a href="#projects" class="btn-secondary">
+                <i class="fas fa-code-branch text-sm"></i>
+                View Projects
+              </a>
+              <button onclick="openResumeModal()" class="btn-primary">
+                <i class="fas fa-file-code text-sm"></i>
+                View Resume
+              </button>
+            </div>
+
+            <!-- Quick stats -->
+            <div
+              class="flex gap-8 mt-10 pt-8"
+              style="border-top: 1px solid var(--border-glass)"
+            >
+              <div>
+                <div class="font-orbitron font-bold text-2xl gradient-text">
+                  3+
+                </div>
+                <div
+                  class="font-rajdhani text-sm tracking-wider uppercase mt-1"
+                  style="color: var(--text-secondary)"
+                >
+                  Languages
+                </div>
+              </div>
+              <div>
+                <div class="font-orbitron font-bold text-2xl gradient-text">
+                  5+
+                </div>
+                <div
+                  class="font-rajdhani text-sm tracking-wider uppercase mt-1"
+                  style="color: var(--text-secondary)"
+                >
+                  Projects
+                </div>
+              </div>
+              <div>
+                <div class="font-orbitron font-bold text-2xl gradient-text">
+                  2+
+                </div>
+                <div
+                  class="font-rajdhani text-sm tracking-wider uppercase mt-1"
+                  style="color: var(--text-secondary)"
+                >
+                  Years Study
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Visual -->
+          <div
+            class="reveal flex flex-col items-center justify-center"
+            style="transition-delay: 0.2s"
+          >
+            <!-- Hex avatar -->
+            <div class="relative">
+              <!-- Rotating ring -->
+              <div
+                class="absolute inset-0 rounded-full border-2 opacity-20 animate-spin"
+                style="
+                  border-color: var(--accent-blue);
+                  animation-duration: 8s;
+                  margin: -20px;
+                "
+              ></div>
+              <div
+                class="absolute inset-0 rounded-full border opacity-10 animate-spin"
+                style="
+                  border-color: var(--accent-purple);
+                  animation-duration: 12s;
+                  animation-direction: reverse;
+                  margin: -40px;
+                "
+              ></div>
+
+              <!-- Avatar container -->
+              <div class="relative w-56 h-56 sm:w-64 sm:h-64">
+                <div
+                  class="hex-frame w-full h-full overflow-hidden"
+                  style="
+                    background: linear-gradient(
+                      135deg,
+                      rgba(0, 212, 255, 0.15),
+                      rgba(176, 64, 251, 0.15)
+                    );
+                    border: 2px solid rgba(0, 212, 255, 0.3);
+                  "
+                >
+                  <div
+                    class="w-full h-full flex items-center justify-center"
+                    style="background: var(--bg-secondary)"
+                  >
+                    <!-- Code icon as placeholder avatar -->
+                    <div class="text-center">
+                      <div
+                        class="text-6xl mb-2"
+                        style="color: var(--accent-blue); opacity: 0.8"
+                      >
+                        <i class="fas fa-shield-halved"></i>
+                      </div>
+                      <div
+                        class="font-orbitron font-bold text-xl gradient-text"
+                      >
+                        <img
+                          src="./images/WhatsApp Image 2026-04-21 at 18.51.07.jpeg"
+                          alt=""
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Code decoration -->
+            <div class="mt-8 code-decoration text-left w-full max-w-xs">
+              <div>
+                &gt;
+                <span style="color: var(--accent-blue)">scan</span>(network,
+                deep=True)
+              </div>
+              <div>
+                &gt;
+                <span style="color: var(--accent-purple)">analyze</span>(data,
+                method='pandas')
+              </div>
+              <div>
+                &gt; <span style="color: #00ff88">status</span>: SECURE ✓
+              </div>
+              <div>
+                &gt;
+                <span style="color: var(--accent-blue)">threat_level</span>:
+                MINIMAL
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div
+          class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce"
+        >
+          <span
+            class="font-rajdhani text-xs tracking-widest uppercase"
+            style="color: var(--text-secondary)"
+            >Scroll</span
+          >
+          <i
+            class="fas fa-chevron-down text-sm"
+            style="color: var(--accent-blue)"
+          ></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ ABOUT ═══════════════════════ -->
+    <section id="about" class="relative py-24 overflow-hidden">
+      <div
+        class="shape w-72 h-72 opacity-5"
+        style="background: var(--accent-purple); top: 0; right: 100px"
+      ></div>
+
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <!-- Left: Terminal -->
+          <div class="reveal">
+            <div class="glass-card overflow-hidden">
+              <!-- Terminal header -->
+              <div
+                class="flex items-center gap-2 px-4 py-3"
+                style="
+                  border-bottom: 1px solid var(--border-glass);
+                  background: rgba(0, 0, 0, 0.3);
+                "
+              >
+                <div class="w-3 h-3 rounded-full bg-red-500 opacity-80"></div>
+                <div
+                  class="w-3 h-3 rounded-full bg-yellow-500 opacity-80"
+                ></div>
+                <div class="w-3 h-3 rounded-full bg-green-500 opacity-80"></div>
+                <span
+                  class="ml-3 font-orbitron text-xs tracking-wider"
+                  style="color: var(--text-secondary)"
+                  >about.exe</span
+                >
+              </div>
+              <!-- Terminal content -->
+              <div
+                class="p-6 font-mono text-sm leading-relaxed"
+                style="color: var(--text-secondary)"
+              >
+                <div class="mb-2">
+                  <span style="color: var(--accent-blue)">$</span>
+                  <span style="color: #e8f4f8">whoami</span>
+                </div>
+                <div class="mb-4 pl-2" style="color: var(--accent-purple)">
+                  priyadarshini@cybersec:~
+                </div>
+
+                <div class="mb-2">
+                  <span style="color: var(--accent-blue)">$</span>
+                  <span style="color: #e8f4f8">cat about.txt</span>
+                </div>
+                <div
+                  class="pl-2 mb-4 leading-loose"
+                  style="color: var(--text-secondary); font-size: 13px"
+                >
+                  Aspiring Cyber Security professional with a<br />
+                  dual passion for
+                  <span style="color: var(--accent-blue)">network defense</span>
+                  and<br />
+                  <span style="color: var(--accent-purple)"
+                    >data-driven analysis</span
+                  >. I believe in<br />
+                  understanding systems deeply before<br />
+                  securing them.
+                </div>
+
+                <div class="mb-2">
+                  <span style="color: var(--accent-blue)">$</span>
+                  <span style="color: #e8f4f8">cat interests.json</span>
+                </div>
+                <div
+                  class="pl-2"
+                  style="color: var(--text-secondary); font-size: 12px"
+                >
+                  <span style="color: var(--border-glass)">{</span><br />
+                  &nbsp;&nbsp;<span style="color: var(--accent-blue)"
+                    >"cyber"</span
+                  >:
+                  <span style="color: #00ff88">"Network Security"</span>,<br />
+                  &nbsp;&nbsp;<span style="color: var(--accent-blue)"
+                    >"data"</span
+                  >:
+                  <span style="color: #00ff88">"Statistical Analysis"</span
+                  >,<br />
+                  &nbsp;&nbsp;<span style="color: var(--accent-blue)"
+                    >"coding"</span
+                  >:
+                  <span style="color: #00ff88">"Python &amp; Java"</span>,<br />
+                  &nbsp;&nbsp;<span style="color: var(--accent-blue)"
+                    >"goal"</span
+                  >: <span style="color: #00ff88">"Secure Systems"</span><br />
+                  <span style="color: var(--border-glass)">}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Text -->
+          <div class="reveal" style="transition-delay: 0.15s">
+            <p
+              class="font-rajdhani text-sm tracking-widest uppercase mb-3"
+              style="color: var(--accent-blue)"
+            >
+              // About Me
+            </p>
+            <h2
+              class="section-heading font-orbitron font-bold text-3xl sm:text-4xl mb-6"
+              style="color: var(--text-primary)"
+            >
+              Who I <span class="gradient-text">Am</span>
+            </h2>
+
+            <div
+              class="space-y-5 font-inter text-base leading-relaxed"
+              style="color: var(--text-secondary); line-height: 1.9"
+            >
+              <p>
+                I'm a
+                <strong style="color: var(--text-primary)"
+                  >Cyber Security & Data Analysis</strong
+                >
+                student driven by curiosity about how digital systems work — and
+                how they can be protected. My academic journey has given me a
+                foundation in both offensive security thinking and analytical
+                problem-solving.
+              </p>
+              <p>
+                I bring a methodical approach to every challenge, whether it's
+                dissecting network traffic, writing clean Python scripts, or
+                uncovering patterns in complex datasets. I thrive at the
+                intersection of
+                <span style="color: var(--accent-blue)">security</span> and
+                <span style="color: var(--accent-purple)"
+                  >data intelligence</span
+                >.
+              </p>
+              <p>
+                My goal is to build a career where I can develop secure, robust
+                systems and contribute to organizations that take data
+                protection seriously.
+              </p>
+            </div>
+
+            <!-- Traits -->
+            <div class="grid grid-cols-2 gap-4 mt-8">
+              <div class="glass-card p-4 flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style="
+                    background: rgba(0, 212, 255, 0.1);
+                    border: 1px solid rgba(0, 212, 255, 0.2);
+                  "
+                >
+                  <i
+                    class="fas fa-brain text-sm"
+                    style="color: var(--accent-blue)"
+                  ></i>
+                </div>
+                <div>
+                  <div
+                    class="font-rajdhani font-bold text-sm"
+                    style="color: var(--text-primary)"
+                  >
+                    Analytical
+                  </div>
+                  <div
+                    class="font-inter text-xs"
+                    style="color: var(--text-secondary)"
+                  >
+                    Data-first thinking
+                  </div>
+                </div>
+              </div>
+              <div class="glass-card p-4 flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style="
+                    background: rgba(176, 64, 251, 0.1);
+                    border: 1px solid rgba(176, 64, 251, 0.2);
+                  "
+                >
+                  <i
+                    class="fas fa-shield text-sm"
+                    style="color: var(--accent-purple)"
+                  ></i>
+                </div>
+                <div>
+                  <div
+                    class="font-rajdhani font-bold text-sm"
+                    style="color: var(--text-primary)"
+                  >
+                    Security-First
+                  </div>
+                  <div
+                    class="font-inter text-xs"
+                    style="color: var(--text-secondary)"
+                  >
+                    Defend by design
+                  </div>
+                </div>
+              </div>
+              <div class="glass-card p-4 flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style="
+                    background: rgba(0, 255, 136, 0.1);
+                    border: 1px solid rgba(0, 255, 136, 0.2);
+                  "
+                >
+                  <i
+                    class="fas fa-puzzle-piece text-sm"
+                    style="color: #00ff88"
+                  ></i>
+                </div>
+                <div>
+                  <div
+                    class="font-rajdhani font-bold text-sm"
+                    style="color: var(--text-primary)"
+                  >
+                    Problem Solver
+                  </div>
+                  <div
+                    class="font-inter text-xs"
+                    style="color: var(--text-secondary)"
+                  >
+                    Root cause focus
+                  </div>
+                </div>
+              </div>
+              <div class="glass-card p-4 flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style="
+                    background: rgba(0, 212, 255, 0.1);
+                    border: 1px solid rgba(0, 212, 255, 0.2);
+                  "
+                >
+                  <i
+                    class="fas fa-graduation-cap text-sm"
+                    style="color: var(--accent-blue)"
+                  ></i>
+                </div>
+                <div>
+                  <div
+                    class="font-rajdhani font-bold text-sm"
+                    style="color: var(--text-primary)"
+                  >
+                    Continuous Learner
+                  </div>
+                  <div
+                    class="font-inter text-xs"
+                    style="color: var(--text-secondary)"
+                  >
+                    Always evolving
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ SKILLS ═══════════════════════ -->
+    <section
+      id="skills"
+      class="relative py-24"
+      style="
+        background: linear-gradient(
+          180deg,
+          transparent,
+          rgba(0, 212, 255, 0.02),
+          transparent
+        );
+      "
+    >
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16 reveal">
+          <p
+            class="font-rajdhani text-sm tracking-widest uppercase mb-3"
+            style="color: var(--accent-blue)"
+          >
+            // Technical Arsenal
+          </p>
+          <h2
+            class="font-orbitron font-bold text-3xl sm:text-4xl"
+            style="color: var(--text-primary)"
+          >
+            Skills &amp; <span class="gradient-text">Expertise</span>
+          </h2>
+          <div
+            class="w-16 h-0.5 mx-auto mt-4"
+            style="
+              background: linear-gradient(
+                90deg,
+                var(--accent-blue),
+                var(--accent-purple)
+              );
+            "
+          ></div>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Programming -->
+          <div class="glass-card bracket-card p-6 reveal">
+            <div class="flex items-center gap-3 mb-6">
+              <div
+                class="w-10 h-10 rounded-lg flex items-center justify-center"
+                style="
+                  background: rgba(0, 212, 255, 0.1);
+                  border: 1px solid rgba(0, 212, 255, 0.25);
+                "
+              >
+                <i
+                  class="fas fa-code text-sm"
+                  style="color: var(--accent-blue)"
+                ></i>
+              </div>
+              <h3
+                class="font-rajdhani font-bold text-lg tracking-wider uppercase"
+                style="color: var(--text-primary)"
+              >
+                Programming
+              </h3>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >Python</span
+                  >
+                  <span
+                    class="font-orbitron text-xs"
+                    style="color: var(--accent-blue)"
+                    >85%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="85%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >Java</span
+                  >
+                  <span
+                    class="font-orbitron text-xs"
+                    style="color: var(--accent-blue)"
+                    >72%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="72%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >C</span
+                  >
+                  <span
+                    class="font-orbitron text-xs"
+                    style="color: var(--accent-blue)"
+                    >65%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="65%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Database -->
+          <div
+            class="glass-card bracket-card p-6 reveal"
+            style="transition-delay: 0.1s"
+          >
+            <div class="flex items-center gap-3 mb-6">
+              <div
+                class="w-10 h-10 rounded-lg flex items-center justify-center"
+                style="
+                  background: rgba(176, 64, 251, 0.1);
+                  border: 1px solid rgba(176, 64, 251, 0.25);
+                "
+              >
+                <i
+                  class="fas fa-database text-sm"
+                  style="color: var(--accent-purple)"
+                ></i>
+              </div>
+              <h3
+                class="font-rajdhani font-bold text-lg tracking-wider uppercase"
+                style="color: var(--text-primary)"
+              >
+                Database
+              </h3>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >MySQL</span
+                  >
+                  <span
+                    class="font-orbitron text-xs"
+                    style="color: var(--accent-purple)"
+                    >80%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="80%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >PostgreSQL</span
+                  >
+                  <span
+                    class="font-orbitron text-xs"
+                    style="color: var(--accent-purple)"
+                    >70%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="70%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >SQL Queries</span
+                  >
+                  <span
+                    class="font-orbitron text-xs"
+                    style="color: var(--accent-purple)"
+                    >82%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="82%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Analysis -->
+          <div
+            class="glass-card bracket-card p-6 reveal"
+            style="transition-delay: 0.2s"
+          >
+            <div class="flex items-center gap-3 mb-6">
+              <div
+                class="w-10 h-10 rounded-lg flex items-center justify-center"
+                style="
+                  background: rgba(0, 255, 136, 0.1);
+                  border: 1px solid rgba(0, 255, 136, 0.25);
+                "
+              >
+                <i class="fas fa-chart-line text-sm" style="color: #00ff88"></i>
+              </div>
+              <h3
+                class="font-rajdhani font-bold text-lg tracking-wider uppercase"
+                style="color: var(--text-primary)"
+              >
+                Data Analysis
+              </h3>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >Pandas</span
+                  >
+                  <span class="font-orbitron text-xs" style="color: #00ff88"
+                    >78%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="78%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >NumPy</span
+                  >
+                  <span class="font-orbitron text-xs" style="color: #00ff88"
+                    >74%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="74%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >Statistical Analysis</span
+                  >
+                  <span class="font-orbitron text-xs" style="color: #00ff88"
+                    >70%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="70%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Visualization -->
+          <div
+            class="glass-card bracket-card p-6 reveal"
+            style="transition-delay: 0.1s"
+          >
+            <div class="flex items-center gap-3 mb-6">
+              <div
+                class="w-10 h-10 rounded-lg flex items-center justify-center"
+                style="
+                  background: rgba(0, 212, 255, 0.1);
+                  border: 1px solid rgba(0, 212, 255, 0.25);
+                "
+              >
+                <i
+                  class="fas fa-chart-bar text-sm"
+                  style="color: var(--accent-blue)"
+                ></i>
+              </div>
+              <h3
+                class="font-rajdhani font-bold text-lg tracking-wider uppercase"
+                style="color: var(--text-primary)"
+              >
+                Visualization
+              </h3>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >Matplotlib</span
+                  >
+                  <span
+                    class="font-orbitron text-xs"
+                    style="color: var(--accent-blue)"
+                    >75%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="75%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span
+                    class="font-rajdhani font-semibold text-sm"
+                    style="color: var(--text-secondary)"
+                    >Excel / Spreadsheets</span
+                  >
+                  <span
+                    class="font-orbitron text-xs"
+                    style="color: var(--accent-blue)"
+                    >80%</span
+                  >
+                </div>
+                <div
+                  class="h-1 rounded-full"
+                  style="background: rgba(255, 255, 255, 0.08)"
+                >
+                  <div
+                    class="skill-bar-fill"
+                    data-width="80%"
+                    style="width: 0"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cyber Security -->
+          <div
+            class="glass-card bracket-card p-6 reveal md:col-span-2 lg:col-span-2"
+            style="transition-delay: 0.2s"
+          >
+            <div class="flex items-center gap-3 mb-6">
+              <div
+                class="w-10 h-10 rounded-lg flex items-center justify-center"
+                style="
+                  background: rgba(176, 64, 251, 0.1);
+                  border: 1px solid rgba(176, 64, 251, 0.25);
+                "
+              >
+                <i
+                  class="fas fa-shield-halved text-sm"
+                  style="color: var(--accent-purple)"
+                ></i>
+              </div>
+              <h3
+                class="font-rajdhani font-bold text-lg tracking-wider uppercase"
+                style="color: var(--text-primary)"
+              >
+                Cyber Security
+              </h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between mb-2">
+                    <span
+                      class="font-rajdhani font-semibold text-sm"
+                      style="color: var(--text-secondary)"
+                      >Network Security Basics</span
+                    >
+                    <span
+                      class="font-orbitron text-xs"
+                      style="color: var(--accent-purple)"
+                      >68%</span
+                    >
+                  </div>
+                  <div
+                    class="h-1 rounded-full"
+                    style="background: rgba(255, 255, 255, 0.08)"
+                  >
+                    <div
+                      class="skill-bar-fill"
+                      data-width="68%"
+                      style="width: 0"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-2">
+                    <span
+                      class="font-rajdhani font-semibold text-sm"
+                      style="color: var(--text-secondary)"
+                      >Vulnerability Awareness</span
+                    >
+                    <span
+                      class="font-orbitron text-xs"
+                      style="color: var(--accent-purple)"
+                      >72%</span
+                    >
+                  </div>
+                  <div
+                    class="h-1 rounded-full"
+                    style="background: rgba(255, 255, 255, 0.08)"
+                  >
+                    <div
+                      class="skill-bar-fill"
+                      data-width="72%"
+                      style="width: 0"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-2 content-start">
+                <span class="tech-tag">Threat Modeling</span>
+                <span class="tech-tag">OWASP</span>
+                <span class="tech-tag">Linux Fundamentals</span>
+                <span class="tech-tag">Wireshark</span>
+                <span class="tech-tag">CTF Challenges</span>
+                <span class="tech-tag">Secure Coding</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ PROJECTS ═══════════════════════ -->
+    <section id="projects" class="relative py-24">
+      <div
+        class="shape w-80 h-80 opacity-5"
+        style="background: var(--accent-blue); bottom: 0; left: -100px"
+      ></div>
+
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16 reveal">
+          <p
+            class="font-rajdhani text-sm tracking-widest uppercase mb-3"
+            style="color: var(--accent-blue)"
+          >
+            // Portfolio
+          </p>
+          <h2
+            class="font-orbitron font-bold text-3xl sm:text-4xl"
+            style="color: var(--text-primary)"
+          >
+            Featured <span class="gradient-text">Projects</span>
+          </h2>
+          <div
+            class="w-16 h-0.5 mx-auto mt-4"
+            style="
+              background: linear-gradient(
+                90deg,
+                var(--accent-blue),
+                var(--accent-purple)
+              );
+            "
+          ></div>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Project 1: Data Analysis -->
+          <div
+            class="glass-card project-card bracket-card p-6 reveal flex flex-col"
+          >
+            <div class="card-border-glow"></div>
+            <div class="flex items-center justify-between mb-4">
+              <div
+                class="w-12 h-12 rounded-xl flex items-center justify-center"
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    rgba(0, 212, 255, 0.2),
+                    rgba(0, 212, 255, 0.05)
+                  );
+                  border: 1px solid rgba(0, 212, 255, 0.3);
+                "
+              >
+                <i
+                  class="fas fa-chart-line text-lg"
+                  style="color: var(--accent-blue)"
+                ></i>
+              </div>
+              <div class="flex gap-2">
+                <span
+                  class="font-orbitron text-xs px-2 py-1 rounded"
+                  style="
+                    background: rgba(0, 212, 255, 0.1);
+                    color: var(--accent-blue);
+                    border: 1px solid rgba(0, 212, 255, 0.2);
+                  "
+                  >01</span
+                >
+              </div>
+            </div>
+
+            <h3
+              class="font-rajdhani font-bold text-xl mb-2"
+              style="color: var(--text-primary)"
+            >
+              COVID-19 Data Analysis
+            </h3>
+            <p
+              class="font-inter text-sm leading-relaxed mb-4 flex-grow"
+              style="color: var(--text-secondary)"
+            >
+              Comprehensive analysis of COVID-19 global dataset using Python.
+              Explored infection trends, mortality rates, and vaccination
+              rollout patterns across 50+ countries with visualizations.
+            </p>
+
+            <div class="flex flex-wrap gap-2 mb-5">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Pandas</span>
+              <span class="tech-tag">Matplotlib</span>
+              <span class="tech-tag">NumPy</span>
+            </div>
+
+            <button
+              onclick="openProjectModal(0)"
+              class="btn-primary w-full justify-center text-sm py-2.5"
+            >
+              <i class="fas fa-external-link-alt text-xs"></i>
+              View Details
+            </button>
+          </div>
+
+          <!-- Project 2: SQL Database -->
+          <div
+            class="glass-card project-card bracket-card p-6 reveal flex flex-col"
+            style="transition-delay: 0.1s"
+          >
+            <div class="card-border-glow"></div>
+            <div class="flex items-center justify-between mb-4">
+              <div
+                class="w-12 h-12 rounded-xl flex items-center justify-center"
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    rgba(176, 64, 251, 0.2),
+                    rgba(176, 64, 251, 0.05)
+                  );
+                  border: 1px solid rgba(176, 64, 251, 0.3);
+                "
+              >
+                <i
+                  class="fas fa-database text-lg"
+                  style="color: var(--accent-purple)"
+                ></i>
+              </div>
+              <div class="flex gap-2">
+                <span
+                  class="font-orbitron text-xs px-2 py-1 rounded"
+                  style="
+                    background: rgba(176, 64, 251, 0.1);
+                    color: var(--accent-purple);
+                    border: 1px solid rgba(176, 64, 251, 0.2);
+                  "
+                  >02</span
+                >
+              </div>
+            </div>
+
+            <h3
+              class="font-rajdhani font-bold text-xl mb-2"
+              style="color: var(--text-primary)"
+            >
+              Library Management System
+            </h3>
+            <p
+              class="font-inter text-sm leading-relaxed mb-4 flex-grow"
+              style="color: var(--text-secondary)"
+            >
+              Full relational database design for a university library.
+              Implemented complex queries, stored procedures, triggers, and
+              views for book tracking, member management, and borrowing history.
+            </p>
+
+            <div class="flex flex-wrap gap-2 mb-5">
+              <span class="tech-tag">MySQL</span>
+              <span class="tech-tag">SQL</span>
+              <span class="tech-tag">PostgreSQL</span>
+              <span class="tech-tag">ERD Design</span>
+            </div>
+
+            <button
+              onclick="openProjectModal(1)"
+              class="btn-primary w-full justify-center text-sm py-2.5"
+              style="
+                border-color: var(--accent-purple);
+                color: var(--accent-purple);
+              "
+            >
+              <i class="fas fa-external-link-alt text-xs"></i>
+              View Details
+            </button>
+          </div>
+
+          <!-- Project 3: Cyber Security -->
+          <div
+            class="glass-card project-card bracket-card p-6 reveal flex flex-col"
+            style="transition-delay: 0.2s"
+          >
+            <div class="card-border-glow"></div>
+            <div class="flex items-center justify-between mb-4">
+              <div
+                class="w-12 h-12 rounded-xl flex items-center justify-center"
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    rgba(0, 255, 136, 0.2),
+                    rgba(0, 255, 136, 0.05)
+                  );
+                  border: 1px solid rgba(0, 255, 136, 0.3);
+                "
+              >
+                <i
+                  class="fas fa-shield-halved text-lg"
+                  style="color: #00ff88"
+                ></i>
+              </div>
+              <div class="flex gap-2">
+                <span
+                  class="font-orbitron text-xs px-2 py-1 rounded"
+                  style="
+                    background: rgba(0, 255, 136, 0.1);
+                    color: #00ff88;
+                    border: 1px solid rgba(0, 255, 136, 0.2);
+                  "
+                  >03</span
+                >
+              </div>
+            </div>
+
+            <h3
+              class="font-rajdhani font-bold text-xl mb-2"
+              style="color: var(--text-primary)"
+            >
+              Network Vulnerability Scanner
+            </h3>
+            <p
+              class="font-inter text-sm leading-relaxed mb-4 flex-grow"
+              style="color: var(--text-secondary)"
+            >
+              Python-based network scanning tool for educational purposes.
+              Identifies open ports, detects common services, and generates a
+              basic vulnerability report to understand attack surfaces.
+            </p>
+
+            <div class="flex flex-wrap gap-2 mb-5">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Networking</span>
+              <span class="tech-tag">Socket API</span>
+              <span class="tech-tag">Security</span>
+            </div>
+
+            <button
+              onclick="openProjectModal(2)"
+              class="btn-primary w-full justify-center text-sm py-2.5"
+              style="border-color: #00ff88; color: #00ff88"
+            >
+              <i class="fas fa-external-link-alt text-xs"></i>
+              View Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ RESUME ═══════════════════════ -->
+    <section
+      id="resume"
+      class="relative py-24"
+      style="
+        background: linear-gradient(
+          180deg,
+          transparent,
+          rgba(176, 64, 251, 0.02),
+          transparent
+        );
+      "
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16 reveal">
+          <p
+            class="font-rajdhani text-sm tracking-widest uppercase mb-3"
+            style="color: var(--accent-blue)"
+          >
+            // Credentials
+          </p>
+          <h2
+            class="font-orbitron font-bold text-3xl sm:text-4xl"
+            style="color: var(--text-primary)"
+          >
+            My <span class="gradient-text">Resume</span>
+          </h2>
+          <div
+            class="w-16 h-0.5 mx-auto mt-4"
+            style="
+              background: linear-gradient(
+                90deg,
+                var(--accent-blue),
+                var(--accent-purple)
+              );
+            "
+          ></div>
+        </div>
+
+        <div class="glass-card p-8 sm:p-12 reveal text-center">
+          <div
+            class="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+            style="
+              background: linear-gradient(
+                135deg,
+                rgba(0, 212, 255, 0.15),
+                rgba(176, 64, 251, 0.15)
+              );
+              border: 1px solid var(--border-glass);
+            "
+          >
+            <i class="fas fa-file-code text-3xl gradient-text"></i>
+          </div>
+
+          <h3 class="font-orbitron font-bold text-2xl mb-3 gradient-text">
+            Priya Darshini
+          </h3>
+          <p
+            class="font-rajdhani text-lg tracking-wider mb-2"
+            style="color: var(--text-secondary)"
+          >
+            Cyber Security & Data Analysis Student
+          </p>
+          <p
+            class="font-inter text-sm mb-8"
+            style="color: var(--text-secondary)"
+          >
+            View my full professional resume with education, projects, and
+            skills
+          </p>
+
+          <!-- Quick highlights -->
+          <div class="grid sm:grid-cols-3 gap-4 mb-10">
+            <div class="glass-card p-4">
+              <div class="font-orbitron font-bold text-xl gradient-text mb-1">
+                B.E
+              </div>
+              <div
+                class="font-rajdhani text-sm"
+                style="color: var(--text-secondary)"
+              >
+                Cyber Security
+              </div>
+            </div>
+            <div class="glass-card p-4">
+              <div class="font-orbitron font-bold text-xl gradient-text mb-1">
+                3+
+              </div>
+              <div
+                class="font-rajdhani text-sm"
+                style="color: var(--text-secondary)"
+              >
+                Programming Languages
+              </div>
+            </div>
+            <div class="glass-card p-4">
+              <div class="font-orbitron font-bold text-xl gradient-text mb-1">
+                5+
+              </div>
+              <div
+                class="font-rajdhani text-sm"
+                style="color: var(--text-secondary)"
+              >
+                Completed Projects
+              </div>
+            </div>
+          </div>
+
+          <button
+            onclick="openResumeModal()"
+            class="btn-secondary text-lg px-10 py-4"
+          >
+            <i class="fas fa-eye"></i>
+            View Full Resume
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ CONTACT ═══════════════════════ -->
+    <section id="contact" class="relative py-24">
+      <div
+        class="shape w-72 h-72 opacity-5"
+        style="
+          background: var(--accent-blue);
+          top: 50%;
+          right: -100px;
+          transform: translateY(-50%);
+        "
+      ></div>
+
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16 reveal">
+          <p
+            class="font-rajdhani text-sm tracking-widest uppercase mb-3"
+            style="color: var(--accent-blue)"
+          >
+            // Get In Touch
+          </p>
+          <h2
+            class="font-orbitron font-bold text-3xl sm:text-4xl"
+            style="color: var(--text-primary)"
+          >
+            Contact <span class="gradient-text">Me</span>
+          </h2>
+          <div
+            class="w-16 h-0.5 mx-auto mt-4"
+            style="
+              background: linear-gradient(
+                90deg,
+                var(--accent-blue),
+                var(--accent-purple)
+              );
+            "
+          ></div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-10">
+          <!-- Left: Info -->
+          <div class="reveal">
+            <p
+              class="font-inter text-base leading-relaxed mb-8"
+              style="color: var(--text-secondary); line-height: 1.9"
+            >
+              I'm actively looking for internship opportunities and
+              collaborative projects. Whether you have a question, a project
+              idea, or just want to connect — my inbox is always open.
+            </p>
+
+            <!-- Contact methods -->
+            <div class="space-y-4">
+              <a
+                href="mailto:alex.carter@email.com"
+                class="flex items-center gap-4 glass-card p-4 hover:border-cyan-400 transition-all group"
+                style="text-decoration: none"
+              >
+                <div
+                  class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style="
+                    background: rgba(0, 212, 255, 0.1);
+                    border: 1px solid rgba(0, 212, 255, 0.25);
+                  "
+                >
+                  <i
+                    class="fas fa-envelope text-sm"
+                    style="color: var(--accent-blue)"
+                  ></i>
+                </div>
+                <div>
+                  <div
+                    class="font-rajdhani font-bold text-sm tracking-wider uppercase"
+                    style="color: var(--text-primary)"
+                  >
+                    Email
+                  </div>
+                  <div
+                    class="font-inter text-sm"
+                    style="color: var(--text-secondary)"
+                  >
+                    priyadarshini2206@gmail.com
+                  </div>
+                </div>
+                <i
+                  class="fas fa-arrow-right ml-auto text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  style="color: var(--accent-blue)"
+                ></i>
+              </a>
+
+              <a
+                href="https://www.linkedin.com/in/priyadarshini-a-932282375/"
+                target="_blank"
+                class="flex items-center gap-4 glass-card p-4 hover:border-cyan-400 transition-all group"
+                style="text-decoration: none"
+              >
+                <div
+                  class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style="
+                    background: rgba(0, 119, 181, 0.15);
+                    border: 1px solid rgba(0, 119, 181, 0.3);
+                  "
+                >
+                  <i class="fab fa-linkedin text-sm" style="color: #0077b5"></i>
+                </div>
+                <div>
+                  <div
+                    class="font-rajdhani font-bold text-sm tracking-wider uppercase"
+                    style="color: var(--text-primary)"
+                  >
+                    LinkedIn
+                  </div>
+                  <div
+                    class="font-inter text-sm"
+                    style="color: var(--text-secondary)"
+                  >
+                    linkedin.com/in/priyadarshini-a-932282375
+                  </div>
+                </div>
+                <i
+                  class="fas fa-arrow-right ml-auto text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  style="color: var(--accent-blue)"
+                ></i>
+              </a>
+
+              <a
+                href="https://github.com"
+                target="_blank"
+                class="flex items-center gap-4 glass-card p-4 hover:border-cyan-400 transition-all group"
+                style="text-decoration: none"
+              >
+                <div
+                  class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style="
+                    background: rgba(255, 255, 255, 0.05);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                  "
+                >
+                  <i
+                    class="fab fa-github text-sm"
+                    style="color: var(--text-primary)"
+                  ></i>
+                </div>
+                <div>
+                  <div
+                    class="font-rajdhani font-bold text-sm tracking-wider uppercase"
+                    style="color: var(--text-primary)"
+                  >
+                    GitHub
+                  </div>
+                  <div
+                    class="font-inter text-sm"
+                    style="color: var(--text-secondary)"
+                  >
+                    github.com/priya
+                  </div>
+                </div>
+                <i
+                  class="fas fa-arrow-right ml-auto text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  style="color: var(--accent-blue)"
+                ></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right: Form -->
+          <div class="reveal" style="transition-delay: 0.15s">
+            <form
+              id="contact-form"
+              class="glass-card p-6 sm:p-8 space-y-5"
+              onsubmit="handleFormSubmit(event)"
+            >
+              <h3
+                class="font-rajdhani font-bold text-xl tracking-wider"
+                style="color: var(--text-primary)"
+              >
+                Send a Message
+              </h3>
+
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    class="block font-rajdhani font-semibold text-sm mb-2 tracking-wider"
+                    style="color: var(--text-secondary)"
+                    >Name</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="Your name"
+                    class="form-input"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block font-rajdhani font-semibold text-sm mb-2 tracking-wider"
+                    style="color: var(--text-secondary)"
+                    >Email</label
+                  >
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    class="form-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  class="block font-rajdhani font-semibold text-sm mb-2 tracking-wider"
+                  style="color: var(--text-secondary)"
+                  >Subject</label
+                >
+                <input
+                  type="text"
+                  placeholder="Project inquiry / Collaboration"
+                  class="form-input"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  class="block font-rajdhani font-semibold text-sm mb-2 tracking-wider"
+                  style="color: var(--text-secondary)"
+                  >Message</label
+                >
+                <textarea
+                  rows="5"
+                  placeholder="Tell me about your project or opportunity..."
+                  class="form-input resize-none"
+                  required
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                class="btn-secondary w-full justify-center py-3.5"
+              >
+                <i class="fas fa-paper-plane text-sm"></i>
+                Send Message
+              </button>
+
+              <div
+                id="form-success"
+                class="hidden text-center py-3 rounded-lg font-rajdhani font-semibold tracking-wider text-sm"
+                style="
+                  background: rgba(0, 255, 136, 0.1);
+                  border: 1px solid rgba(0, 255, 136, 0.3);
+                  color: #00ff88;
+                "
+              >
+                <i class="fas fa-check-circle mr-2"></i>Message sent
+                successfully!
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+    <footer
+      class="relative py-12"
+      style="border-top: 1px solid var(--border-glass)"
+    >
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div
+          class="flex flex-col sm:flex-row items-center justify-between gap-6"
+        >
+          <!-- Logo -->
+          <div class="flex items-center gap-3">
+            <div
+              class="w-8 h-8 border rotate-45 flex items-center justify-center"
+              style="border-color: var(--accent-blue)"
+            >
+              <div
+                class="w-3 h-3 rotate-[-45deg] font-orbitron font-bold text-xs"
+                style="color: var(--accent-blue)"
+              >
+                PD
+              </div>
+            </div>
+            <div>
+              <div class="font-orbitron font-bold text-sm gradient-text">
+                PRIYA DARSHINI
+              </div>
+              <div
+                class="font-rajdhani text-xs tracking-widest"
+                style="color: var(--text-secondary)"
+              >
+                CYBER SEC / DATA ANALYST
+              </div>
+            </div>
+          </div>
+
+          <!-- Center: Nav -->
+          <div class="flex gap-6 flex-wrap justify-center">
+            <a href="#about" class="nav-link text-xs">About</a>
+            <a href="#skills" class="nav-link text-xs">Skills</a>
+            <a href="#projects" class="nav-link text-xs">Projects</a>
+            <a href="#contact" class="nav-link text-xs">Contact</a>
+          </div>
+
+          <!-- Social links -->
+          <div class="flex gap-3">
+            <a
+              href="mailto:priyadarshini2206@gmail.com"
+              class="social-link"
+              title="Email"
+              ><i class="fas fa-envelope"></i
+            ></a>
+            <a
+              href="https://www.linkedin.com/in/priyadarshini-a-932282375/"
+              target="_blank"
+              class="social-link"
+              title="LinkedIn"
+              ><i class="fab fa-linkedin"></i
+            ></a>
+            <a
+              href="https://github.com"
+              target="_blank"
+              class="social-link"
+              title="GitHub"
+              ><i class="fab fa-github"></i
+            ></a>
+          </div>
+        </div>
+
+        <div
+          class="mt-8 pt-6 text-center"
+          style="border-top: 1px solid var(--border-glass)"
+        >
+          <p class="font-inter text-xs" style="color: var(--text-secondary)">
+            &copy; 2026 Priya Darshini. Designed &amp; built with precision.
+            <span class="mx-2" style="color: var(--accent-blue)">|</span>
+            <span style="color: var(--accent-blue)">&lt;/&gt;</span> with
+            passion for security.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ═══════════════════════ RESUME MODAL ═══════════════════════ -->
+    <div
+      id="resume-modal"
+      class="modal-overlay"
+      onclick="closeResumeModal(event)"
+    >
+      <div class="modal-content">
+        <!-- Modal header -->
+        <div
+          class="flex items-center justify-between p-5"
+          style="
+            border-bottom: 1px solid var(--border-glass);
+            background: rgba(0, 0, 0, 0.3);
+          "
+        >
+          <div class="flex items-center gap-3">
+            <i class="fas fa-file-code" style="color: var(--accent-blue)"></i>
+            <span
+              class="font-orbitron font-bold text-sm tracking-wider gradient-text"
+              >RESUME — PRIYA_DARSHINI</span
+            >
+          </div>
+          <button onclick="closeResumeModal()" class="theme-btn">
+            <i class="fas fa-times text-sm"></i>
+          </button>
+        </div>
+
+        <!-- Resume content (styled as PDF preview) -->
+        <div class="p-6 sm:p-8" style="color: var(--text-primary)">
+          <!-- Header -->
+          <div
+            class="text-center mb-8 pb-6"
+            style="border-bottom: 1px solid var(--border-glass)"
+          >
+            <h2
+              class="font-orbitron font-black text-2xl sm:text-3xl gradient-text mb-2"
+            >
+              PRIYA_DARSHINI
+            </h2>
+            <p
+              class="font-rajdhani font-semibold text-lg tracking-wider mb-3"
+              style="color: var(--text-secondary)"
+            >
+              Cyber Security & Data Analysis Student
+            </p>
+            <div
+              class="flex flex-wrap justify-center gap-4 text-sm font-inter"
+              style="color: var(--text-secondary)"
+            >
+              <span
+                ><i
+                  class="fas fa-envelope mr-1"
+                  style="color: var(--accent-blue)"
+                ></i
+                >priyadarshini2206@gmail.com</span
+              >
+              <span
+                ><i
+                  class="fab fa-linkedin mr-1"
+                  style="color: var(--accent-blue)"
+                ></i
+                >linkedin.com/in/priyadarshini-a-932282375</span
+              >
+              <span
+                ><i
+                  class="fab fa-github mr-1"
+                  style="color: var(--accent-blue)"
+                ></i
+                >github.com/priyadarshini</span
+              >
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div class="mb-6">
+            <div class="resume-section-header">Professional Summary</div>
+            <p
+              class="font-inter text-sm leading-relaxed"
+              style="color: var(--text-secondary)"
+            >
+              Dedicated Cyber Security and Data Analysis student with hands-on
+              experience in Python, Java, and C programming. Skilled in database
+              management (MySQL, PostgreSQL), data analysis (Pandas, NumPy), and
+              security fundamentals. Passionate about building secure,
+              data-driven solutions and continuously expanding knowledge of
+              modern cybersecurity practices.
+            </p>
+          </div>
+
+          <!-- Education -->
+          <div class="mb-6">
+            <div class="resume-section-header">Education</div>
+            <div class="glass-card p-4">
+              <div class="flex justify-between items-start flex-wrap gap-2">
+                <div>
+                  <div
+                    class="font-rajdhani font-bold text-base"
+                    style="color: var(--text-primary)"
+                  >
+                    B.e Cyber Security & Data Analysis
+                  </div>
+                  <div
+                    class="font-inter text-sm"
+                    style="color: var(--accent-blue)"
+                  >
+                    Prince DR.K.Vasudevan College of Engineering and Technology
+                  </div>
+                </div>
+                <span class="tech-tag text-xs">2023 – Present</span>
+              </div>
+              <div
+                class="mt-2 font-inter text-sm"
+                style="color: var(--text-secondary)"
+              >
+                Relevant modules: Network Security, Database Systems, Python
+                Programming, Statistical Methods, Operating Systems
+              </div>
+            </div>
+          </div>
+
+          <!-- Technical Skills -->
+          <div class="mb-6">
+            <div class="resume-section-header">Technical Skills</div>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div class="glass-card p-3">
+                <div
+                  class="font-rajdhani font-bold text-sm mb-1"
+                  style="color: var(--accent-blue)"
+                >
+                  Programming
+                </div>
+                <div
+                  class="font-inter text-sm"
+                  style="color: var(--text-secondary)"
+                >
+                  Python, Java, C
+                </div>
+              </div>
+              <div class="glass-card p-3">
+                <div
+                  class="font-rajdhani font-bold text-sm mb-1"
+                  style="color: var(--accent-purple)"
+                >
+                  Databases
+                </div>
+                <div
+                  class="font-inter text-sm"
+                  style="color: var(--text-secondary)"
+                >
+                  MySQL, PostgreSQL, SQL
+                </div>
+              </div>
+              <div class="glass-card p-3">
+                <div
+                  class="font-rajdhani font-bold text-sm mb-1"
+                  style="color: #00ff88"
+                >
+                  Data Analysis
+                </div>
+                <div
+                  class="font-inter text-sm"
+                  style="color: var(--text-secondary)"
+                >
+                  Pandas, NumPy, Statistical Analysis, Matplotlib, Excel
+                </div>
+              </div>
+              <div class="glass-card p-3">
+                <div
+                  class="font-rajdhani font-bold text-sm mb-1"
+                  style="color: var(--accent-blue)"
+                >
+                  Cyber Security
+                </div>
+                <div
+                  class="font-inter text-sm"
+                  style="color: var(--text-secondary)"
+                >
+                  Network Security, Vulnerability Assessment, OWASP
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Projects -->
+          <div class="mb-6">
+            <div class="resume-section-header">Projects</div>
+            <div class="space-y-3">
+              <div class="glass-card p-4">
+                <div
+                  class="font-rajdhani font-bold text-sm"
+                  style="color: var(--text-primary)"
+                >
+                  COVID-19 Data Analysis
+                  <span
+                    class="ml-2 font-inter font-normal text-xs"
+                    style="color: var(--text-secondary)"
+                    >| Python, Pandas, Matplotlib</span
+                  >
+                </div>
+                <div
+                  class="font-inter text-xs mt-1"
+                  style="color: var(--text-secondary)"
+                >
+                  Analyzed global COVID dataset; produced trend visualizations
+                  and statistical summaries for 50+ countries.
+                </div>
+              </div>
+              <div class="glass-card p-4">
+                <div
+                  class="font-rajdhani font-bold text-sm"
+                  style="color: var(--text-primary)"
+                >
+                  Library Management System
+                  <span
+                    class="ml-2 font-inter font-normal text-xs"
+                    style="color: var(--text-secondary)"
+                    >| MySQL, SQL, ERD</span
+                  >
+                </div>
+                <div
+                  class="font-inter text-xs mt-1"
+                  style="color: var(--text-secondary)"
+                >
+                  Designed and implemented a relational database with stored
+                  procedures, triggers, and views for a university library.
+                </div>
+              </div>
+              <div class="glass-card p-4">
+                <div
+                  class="font-rajdhani font-bold text-sm"
+                  style="color: var(--text-primary)"
+                >
+                  Network Vulnerability Scanner
+                  <span
+                    class="ml-2 font-inter font-normal text-xs"
+                    style="color: var(--text-secondary)"
+                    >| Python, Socket API</span
+                  >
+                </div>
+                <div
+                  class="font-inter text-xs mt-1"
+                  style="color: var(--text-secondary)"
+                >
+                  Built an educational port scanner and vulnerability reporter
+                  to identify attack surfaces on local networks.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Certifications / Interests -->
+          <div>
+            <div class="resume-section-header">Interests & Development</div>
+            <div class="flex flex-wrap gap-2">
+              <span class="tech-tag">CTF Competitions</span>
+              <span class="tech-tag">TryHackMe</span>
+              <span class="tech-tag">HackTheBox</span>
+              <span class="tech-tag">Open Source Contributions</span>
+              <span class="tech-tag">Security Research</span>
+              <span class="tech-tag">Machine Learning</span>
+            </div>
+          </div>
+
+          <!-- Download button -->
+          <div class="mt-8 text-center">
+            <button
+              class="btn-secondary"
+              onclick="
+                alert(
+                  'In a live portfolio, this would download the PDF resume.',
+                )
+              "
+            >
+              <i class="fas fa-download text-sm"></i>
+              Download PDF
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════ PROJECT DETAILS MODAL ═══════════════════════ -->
+    <div
+      id="project-modal"
+      class="modal-overlay"
+      onclick="closeProjectModal(event)"
+    >
+      <div class="modal-content">
+        <div
+          class="flex items-center justify-between p-5"
+          style="
+            border-bottom: 1px solid var(--border-glass);
+            background: rgba(0, 0, 0, 0.3);
+          "
+        >
+          <span
+            id="project-modal-title"
+            class="font-orbitron font-bold text-sm tracking-wider gradient-text"
+          ></span>
+          <button onclick="closeProjectModal()" class="theme-btn">
+            <i class="fas fa-times text-sm"></i>
+          </button>
+        </div>
+        <div id="project-modal-body" class="p-6 sm:p-8"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════ JAVASCRIPT ═══════════════════════ -->
+    <script>
+      // ─── Theme toggle ───────────────────────────────────────────
+      let isDark = true;
+      const body = document.getElementById("body");
+      const themeIcon = document.getElementById("theme-icon");
+
+      document.getElementById("theme-toggle").addEventListener("click", () => {
+        isDark = !isDark;
+        body.classList.toggle("light-mode", !isDark);
+        document.documentElement.classList.toggle("light-mode", !isDark);
+        themeIcon.className = isDark
+          ? "fas fa-moon text-sm"
+          : "fas fa-sun text-sm";
+      });
+
+      // ─── Mobile menu ────────────────────────────────────────────
+      document
+        .getElementById("mobile-menu-btn")
+        .addEventListener("click", () => {
+          document.getElementById("mobile-menu").classList.toggle("hidden");
+        });
+
+      function closeMobileMenu() {
+        document.getElementById("mobile-menu").classList.add("hidden");
+      }
+
+      // ─── Cursor glow ────────────────────────────────────────────
+      const cursor = document.getElementById("cursor-glow");
+      document.addEventListener("mousemove", (e) => {
+        cursor.style.left = e.clientX + "px";
+        cursor.style.top = e.clientY + "px";
+      });
+
+      // ─── Scroll progress ────────────────────────────────────────
+      window.addEventListener("scroll", () => {
+        const scrolled =
+          (window.scrollY /
+            (document.documentElement.scrollHeight - window.innerHeight)) *
+          100;
+        document.getElementById("scroll-progress").style.width = scrolled + "%";
+      });
+
+      // ─── Active nav link ────────────────────────────────────────
+      const sections = document.querySelectorAll("section[id]");
+      const navLinks = document.querySelectorAll(".nav-link");
+
+      window.addEventListener("scroll", () => {
+        let current = "";
+        sections.forEach((sec) => {
+          if (window.scrollY >= sec.offsetTop - 100) current = sec.id;
+        });
+        navLinks.forEach((link) => {
+          link.classList.toggle(
+            "active",
+            link.getAttribute("href") === "#" + current,
+          );
+        });
+      });
+
+      // ─── Reveal on scroll ───────────────────────────────────────
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15 },
+      );
+
+      document
+        .querySelectorAll(".reveal")
+        .forEach((el) => revealObserver.observe(el));
+
+      // ─── Skill bars animate on scroll ───────────────────────────
+      const skillObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target
+                .querySelectorAll(".skill-bar-fill")
+                .forEach((bar) => {
+                  setTimeout(() => {
+                    bar.style.width = bar.dataset.width;
+                  }, 200);
+                });
+              skillObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.3 },
+      );
+
+      document
+        .querySelectorAll(".glass-card")
+        .forEach((card) => skillObserver.observe(card));
+
+      // ─── Typing animation ───────────────────────────────────────
+      const phrases = [
+        "Cyber Security Student",
+        "Data Analysis Enthusiast",
+        "Python Developer",
+        "Network Security Learner",
+        "Problem Solver",
+      ];
+      let phraseIdx = 0,
+        charIdx = 0,
+        deleting = false;
+      const typedEl = document.getElementById("typed-text");
+
+      function type() {
+        const current = phrases[phraseIdx];
+        if (deleting) {
+          typedEl.textContent = current.substring(0, --charIdx);
+        } else {
+          typedEl.textContent = current.substring(0, ++charIdx);
+        }
+
+        let speed = deleting ? 40 : 80;
+
+        if (!deleting && charIdx === current.length) {
+          speed = 2000;
+          deleting = true;
+        } else if (deleting && charIdx === 0) {
+          deleting = false;
+          phraseIdx = (phraseIdx + 1) % phrases.length;
+          speed = 400;
+        }
+
+        setTimeout(type, speed);
+      }
+
+      setTimeout(type, 800);
+
+      // ─── Particle canvas ────────────────────────────────────────
+      const canvas = document.getElementById("particle-canvas");
+      const ctx = canvas.getContext("2d");
+      let particles = [];
+      let w, h;
+
+      function resizeCanvas() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+
+      window.addEventListener("resize", () => {
+        resizeCanvas();
+        initParticles();
+      });
+
+      class Particle {
+        constructor() {
+          this.reset(true);
+        }
+
+        reset(random = false) {
+          this.x = Math.random() * w;
+          this.y = random ? Math.random() * h : h + 10;
+          this.vx = (Math.random() - 0.5) * 0.4;
+          this.vy = -(Math.random() * 0.5 + 0.2);
+          this.r = Math.random() * 1.5 + 0.5;
+          this.alpha = Math.random() * 0.5 + 0.1;
+          this.color = Math.random() > 0.5 ? "#00d4ff" : "#b040fb";
+        }
+
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.y < -10) this.reset();
+        }
+
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.globalAlpha = this.alpha;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      function initParticles() {
+        const count = Math.min(Math.floor((w * h) / 12000), 120);
+        particles = Array.from({ length: count }, () => new Particle());
+      }
+
+      function drawConnections() {
+        const maxDist = 120;
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < maxDist) {
+              const opacity = (1 - dist / maxDist) * 0.12;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(0, 212, 255, ${opacity})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      function animateParticles() {
+        ctx.clearRect(0, 0, w, h);
+        drawConnections();
+        particles.forEach((p) => {
+          p.update();
+          p.draw();
+        });
+        requestAnimationFrame(animateParticles);
+      }
+
+      resizeCanvas();
+      initParticles();
+      animateParticles();
+
+      // ─── Resume modal ───────────────────────────────────────────
+      function openResumeModal() {
+        document.getElementById("resume-modal").classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeResumeModal(e) {
+        if (!e || e.target === document.getElementById("resume-modal")) {
+          document.getElementById("resume-modal").classList.remove("open");
+          document.body.style.overflow = "";
+        }
+      }
+
+      // ─── Project modal ──────────────────────────────────────────
+      const projects = [
+        {
+          title: "COVID-19 Data Analysis",
+          icon: "fa-chart-line",
+          color: "#00d4ff",
+          description:
+            "A comprehensive data analysis project examining the global spread and impact of COVID-19. The project explored infection trends, mortality rates, recovery patterns, and vaccination rollout effectiveness across 50+ countries.",
+          highlights: [
+            "Cleaned and preprocessed a 500k+ row dataset using Pandas",
+            "Performed exploratory data analysis (EDA) with statistical summaries",
+            "Created 15+ visualizations including heatmaps, time-series plots, and correlation matrices",
+            "Identified key patterns between vaccination rates and mortality reduction",
+            "Exported an automated PDF report summarizing findings",
+          ],
+          tech: [
+            "Python",
+            "Pandas",
+            "NumPy",
+            "Matplotlib",
+            "Seaborn",
+            "Jupyter Notebook",
+          ],
+          outcome:
+            "Demonstrated strong data wrangling and visualization skills applicable to real-world health analytics.",
+        },
+        {
+          title: "Library Management System",
+          icon: "fa-database",
+          color: "#b040fb",
+          description:
+            "A full relational database system designed and implemented for a university library. The project covers complete database design from ERD to implementation with advanced SQL features.",
+          highlights: [
+            "Designed normalized database schema (3NF) with 8 related tables",
+            "Implemented stored procedures for borrowing/returning workflows",
+            "Created triggers to auto-update book availability status",
+            "Built complex JOIN queries for reporting (overdue books, popular titles)",
+            "Developed role-based access control for staff vs. student users",
+          ],
+          tech: [
+            "MySQL",
+            "PostgreSQL",
+            "SQL",
+            "ERD Design",
+            "Stored Procedures",
+            "Triggers",
+          ],
+          outcome:
+            "Demonstrated database design expertise and SQL proficiency for real-world enterprise applications.",
+        },
+        {
+          title: "Network Vulnerability Scanner",
+          icon: "fa-shield-halved",
+          color: "#00ff88",
+          description:
+            "An educational Python-based network scanning tool designed to understand how vulnerability assessment works. Built for academic purposes to learn offensive security concepts in a controlled lab environment.",
+          highlights: [
+            "Port scanner identifying open TCP/UDP ports across IP ranges",
+            "Service detection for common protocols (HTTP, FTP, SSH, SMB)",
+            "Banner grabbing to identify software versions",
+            "CVE lookup integration for identified services",
+            "Automated HTML vulnerability report generation",
+          ],
+          tech: [
+            "Python",
+            "Socket API",
+            "Scapy",
+            "Networking",
+            "HTML Reports",
+            "Threading",
+          ],
+          outcome:
+            "Deepened understanding of network attack surfaces and how security tools identify vulnerabilities.",
+        },
+      ];
+
+      function openProjectModal(idx) {
+        const p = projects[idx];
+        document.getElementById("project-modal-title").textContent =
+          p.title.toUpperCase();
+
+        document.getElementById("project-modal-body").innerHTML = `
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+               style="background: rgba(${p.color === "#00d4ff" ? "0,212,255" : p.color === "#b040fb" ? "176,64,251" : "0,255,136"},0.15);
+                      border: 1px solid ${p.color}40;">
+            <i class="fas ${p.icon} text-2xl" style="color: ${p.color};"></i>
+          </div>
+          <div>
+            <h3 class="font-rajdhani font-bold text-xl" style="color: var(--text-primary);">${p.title}</h3>
+            <div class="flex flex-wrap gap-2 mt-2">
+              ${p.tech.map((t) => `<span class="tech-tag">${t}</span>`).join("")}
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card p-5 mb-5">
+          <p class="font-inter text-sm leading-relaxed" style="color: var(--text-secondary); line-height: 1.8;">${p.description}</p>
+        </div>
+
+        <div class="mb-5">
+          <div class="resume-section-header">Key Highlights</div>
+          <ul class="space-y-2">
+            ${p.highlights
+              .map(
+                (h) => `
+              <li class="flex items-start gap-3 font-inter text-sm" style="color: var(--text-secondary);">
+                <i class="fas fa-chevron-right mt-0.5 flex-shrink-0" style="color: ${p.color}; font-size: 10px;"></i>
+                ${h}
+              </li>
+            `,
+              )
+              .join("")}
+          </ul>
+        </div>
+
+        <div class="glass-card p-4" style="border-left: 3px solid ${p.color};">
+          <div class="font-rajdhani font-bold text-sm mb-1" style="color: ${p.color};">Outcome</div>
+          <p class="font-inter text-sm" style="color: var(--text-secondary);">${p.outcome}</p>
+        </div>
+      `;
+
+        document.getElementById("project-modal").classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeProjectModal(e) {
+        if (!e || e.target === document.getElementById("project-modal")) {
+          document.getElementById("project-modal").classList.remove("open");
+          document.body.style.overflow = "";
+        }
+      }
+
+      // Close modals on Escape
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeResumeModal();
+          closeProjectModal();
+        }
+      });
+
+      // ─── Contact form ───────────────────────────────────────────
+      function handleFormSubmit(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.innerHTML =
+          '<i class="fas fa-spinner fa-spin text-sm"></i> Sending...';
+        btn.disabled = true;
+
+        setTimeout(() => {
+          document.getElementById("form-success").classList.remove("hidden");
+          e.target.reset();
+          btn.innerHTML =
+            '<i class="fas fa-paper-plane text-sm"></i> Send Message';
+          btn.disabled = false;
+          setTimeout(
+            () =>
+              document.getElementById("form-success").classList.add("hidden"),
+            4000,
+          );
+        }, 1500);
+      }
+
+      // ─── Initial reveal for hero ─────────────────────────────────
+      setTimeout(() => {
+        document
+          .querySelectorAll("#hero .reveal")
+          .forEach((el) => el.classList.add("visible"));
+      }, 100);
+    </script>
+  </body>
+</html>
